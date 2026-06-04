@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# Blender
+*.blend1
+*.blend2
+
+# OS
+.DS_Store
+Thumbs.db
+.env
+
+# Testing
+.pytest_cache/
+
+# Archives & docs
+*.zip
+*.pdf
+
+# LibreOffice lock
+.~lock.*

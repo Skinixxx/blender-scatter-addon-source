@@ -1,0 +1,7 @@
+pytest>=7.0
+pytest-cov>=4.0
+flake8>=6.0
+bandit>=1.7
+safety>=2.3
+numpy>=1.24
+Pillow>=10.0

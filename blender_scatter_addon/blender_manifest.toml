@@ -1,0 +1,17 @@
+schema_version = "1.0.0"
+
+id = "parametric_scatter"
+name = "Parametric Scatter"
+version = "1.0.0"
+tagline = "Parametric object scattering controlled by texture maps"
+maintainer = "Variant 46"
+
+type = "add-on"
+
+tags = ["Object", "Modeling"]
+
+blender_version_min = "5.0.0"
+
+license = ["SPDX:GPL-3.0-or-later"]
+
+copyright = ["2026 Variant 46"]

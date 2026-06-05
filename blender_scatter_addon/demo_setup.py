@@ -59,14 +59,20 @@ settings.use_collection = True
 # Execute scatter
 bpy.ops.scatter.execute()
 
-# Set up viewport
-for area in bpy.context.screen.areas:
-    if area.type == 'VIEW_3D':
-        for space in area.spaces:
-            if space.type == 'VIEW_3D':
-                space.shading.type = 'MATERIAL'
-                space.region_3d.view_distance = 8
-                space.region_3d.rotation_euler = (0.8, 0, 0.5)
+# Set up viewport (skip in background mode)
+if bpy.app.background:
+    print("(background mode — viewport setup skipped)")
+else:
+    for area in bpy.context.screen.areas:
+        if area.type == 'VIEW_3D':
+            for space in area.spaces:
+                if space.type == 'VIEW_3D':
+                    space.shading.type = 'MATERIAL'
+                    space.region_3d.view_distance = 8
+                    try:
+                        space.region_3d.rotation_euler = (0.8, 0, 0.5)
+                    except AttributeError:
+                        pass
 
 print("=== Demo setup complete ===")
 print(f"Scattered {settings.count} plants on terrain")

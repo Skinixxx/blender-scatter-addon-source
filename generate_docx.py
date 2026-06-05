@@ -13,6 +13,9 @@ OUT_FILE = os.path.join(ROOT, 'Пояснительная_записка.docx')
 
 IMG_ARCH = os.path.join(ROOT, 'screenshot_architecture.png')
 IMG_PANEL = os.path.join(ROOT, 'image.png')
+IMG_CLASS = os.path.join(ROOT, 'class_diagram.png')
+IMG_COMP = os.path.join(ROOT, 'diagram_0.png')
+IMG_SEQ = os.path.join(ROOT, 'diagram_1.png')
 
 
 def set_cell_font(cell, name='Times New Roman', size=14):
@@ -206,6 +209,15 @@ def parse_markdown_to_docx():
             elif 'архитектур' in ref.lower() and os.path.exists(IMG_ARCH):
                 run = p.add_run()
                 run.add_picture(IMG_ARCH, width=Inches(5.5))
+            elif 'class_diagram' in ref and os.path.exists(IMG_CLASS):
+                run = p.add_run()
+                run.add_picture(IMG_CLASS, width=Inches(5.5))
+            elif 'diagram_0' in ref and os.path.exists(IMG_COMP):
+                run = p.add_run()
+                run.add_picture(IMG_COMP, width=Inches(5.5))
+            elif 'diagram_1' in ref and os.path.exists(IMG_SEQ):
+                run = p.add_run()
+                run.add_picture(IMG_SEQ, width=Inches(5.5))
             else:
                 run = p.add_run(f'[{ref}]')
                 run.font.name = 'Times New Roman'

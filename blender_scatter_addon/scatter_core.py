@@ -3,8 +3,9 @@ import bpy
 import bmesh
 import mathutils
 from mathutils import Vector
+from mathutils import kdtree
 import random
-from typing import Optional
+from typing import Optional, List
 
 from .texture_utils import load_texture_as_grayscale, get_value_from_map
 
@@ -66,6 +67,9 @@ def scatter_objects(settings) -> bool:
 
     bm.faces.ensure_lookup_table()
 
+    placed_positions: List[Vector] = []
+    kd_overlap = kdtree.KDTree(count) if settings.avoid_overlap else None
+
     for idx, face_idx in enumerate(chosen_faces):
         face = bm.faces[face_idx]
         centroid = face.calc_center_median()
@@ -92,6 +96,17 @@ def scatter_objects(settings) -> bool:
         rotation_angle = rot_val * 360.0
 
         loc = target.matrix_world @ Vector(centroid)
+
+        # Collision detection: skip if too close to an existing instance
+        if settings.avoid_overlap and kd_overlap is not None:
+            if placed_positions:
+                kd_overlap.balance()
+                nearest, _, dist_sq = kd_overlap.find(loc)
+                min_dist = settings.overlap_radius * settings.scale_max
+                if nearest is not None and dist_sq < min_dist * min_dist:
+                    continue
+            kd_overlap.insert(loc, len(placed_positions))
+            placed_positions.append(loc)
 
         inst = bpy.data.objects.new(
             f"{source.name}_instance_{idx:06d}",

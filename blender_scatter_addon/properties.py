@@ -78,6 +78,20 @@ class ScatterSettings(bpy.types.PropertyGroup):
         default=True,
     )
 
+    avoid_overlap: bpy.props.BoolProperty(
+        name="Avoid Overlap",
+        description="Skip instances that would overlap with existing ones",
+        default=False,
+    )
+
+    overlap_radius: bpy.props.FloatProperty(
+        name="Overlap Radius",
+        description="Minimum distance between instances (multiples of max scale)",
+        default=0.5,
+        min=0.1,
+        max=5.0,
+    )
+
 
 classes = (ScatterSettings,)
 

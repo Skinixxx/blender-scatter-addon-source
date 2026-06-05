@@ -35,6 +35,12 @@ class SCATTER_PT_main(bpy.types.Panel):
         box.prop(settings, "align_to_normal")
         box.prop(settings, "use_collection")
 
+        box = layout.box()
+        box.prop(settings, "avoid_overlap")
+        row = box.row(align=True)
+        row.prop(settings, "overlap_radius")
+        row.enabled = settings.avoid_overlap
+
         row = layout.row(align=True)
         row.scale_y = 1.5
         row.operator("scatter.execute", text="Scatter", icon='PARTICLES')

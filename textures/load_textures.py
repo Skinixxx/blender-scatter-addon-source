@@ -9,6 +9,7 @@ maps = {
     "scale": ("scale_map.png", "ScaleMap", "scale_map"),
     "rotation": ("rotation_map.png", "RotationMap", "rotation_map"),
     "stripe_density": ("stripe_density.png", "StripeDensity", None),
+    "checker_scale": ("checker_scale.png", "CheckerScale", None),
 }
 
 for key, (filename, img_name, _) in maps.items():
@@ -26,5 +27,10 @@ settings.scale_map = bpy.data.images.get("ScaleMap")
 settings.rotation_map = bpy.data.images.get("RotationMap")
 print("Textures assigned to scatter settings!")
 
-print("\nГотово! Текстуры загружены и привязаны к аддону.")
-print("Нажми Scatter чтобы увидеть результат.")
+print("\n=== Текстуры загружены ===")
+print("DensityMap  → hotspot в левом нижнем углу (там будет больше экземпляров)")
+print("ScaleMap    → градиент: мелкие сверху-слева, крупные справа-внизу")
+print("RotationMap → угол вокруг центра: 0° слева → 360° полный круг")
+print("StripeDensity → полосы: чёрные/белые (вкл/выкл плотность)")
+print("CheckerScale → шахматка: мелкие/крупные зоны")
+print("\nНажми Scatter чтобы увидеть результат!")

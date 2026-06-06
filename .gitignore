@@ -24,6 +24,14 @@ Thumbs.db
 # Archives & docs
 *.zip
 *.pdf
+*.png
+*.mmd
+*.docx
+*.doc
 
+load_textures.py
+save_blend.py
+
+/textures/
 # LibreOffice lock
 .~lock.*

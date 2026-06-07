@@ -20,6 +20,10 @@ Thumbs.db
 
 # Testing
 .pytest_cache/
+.coverage
+
+# IDE
+.vscode/
 
 # Archives & docs
 *.zip

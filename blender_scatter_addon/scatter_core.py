@@ -331,8 +331,11 @@ def scatter_objects(settings) -> bool:
     if settings.use_lod and placed_objects:
         _create_lod(source, settings.lod_decimate_ratio)
 
+    bpy.context.view_layer.objects.active = target
+    target.select_set(True)
+
     screen = bpy.context.screen
-    if scatter_col and screen:
+    if screen:
         for area in screen.areas:
             if area.type == 'VIEW_3D':
                 area.tag_redraw()

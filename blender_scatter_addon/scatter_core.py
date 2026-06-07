@@ -309,8 +309,9 @@ def scatter_objects(settings) -> bool:
             inst.rotation_euler = (0.0, 0.0, 0.0)
 
         loc_mat = mathutils.Matrix.Rotation(math.radians(rotation_angle), 4, 'Z')
-        inst.matrix_world = loc_mat @ inst.matrix_world if settings.align_to_normal else loc_mat
+        inst.matrix_world = loc_mat @ inst.matrix_world
         inst.matrix_world.translation = loc
+        inst.scale = [scale_factor] * 3
 
         if scatter_col:
             scatter_col.objects.link(inst)

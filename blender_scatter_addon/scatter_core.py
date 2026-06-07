@@ -137,17 +137,20 @@ def _add_wind_gn(target, settings):
 
 
 def _create_lod(source, ratio):
-    lod_mesh = source.data.copy()
-    lod_mesh.name = f"{source.data.name}_LOD"
-    lod_obj = bpy.data.objects.new(f"{source.name}_LOD", lod_mesh)
+    lod_obj = bpy.data.objects.new("_LOD_TMP", source.data.copy())
+    bpy.context.scene.collection.objects.link(lod_obj)
     mod = lod_obj.modifiers.new(name="Decimate", type='DECIMATE')
     mod.ratio = ratio
-    bpy.context.collection.objects.link(lod_obj)
-    with bpy.context.temp_override(object=lod_obj):
-        bpy.ops.object.modifier_apply(modifier=mod.name)
-    lod_obj.hide_viewport = True
-    lod_obj.hide_render = True
-    return lod_obj
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    eval_obj = lod_obj.evaluated_get(depsgraph)
+    result = bpy.data.meshes.new_from_object(eval_obj, preserve_all_data_layers=True, depsgraph=depsgraph)
+    result.name = f"{source.data.name}_LOD"
+    bpy.data.objects.remove(lod_obj, do_unlink=True)
+    lod_ref = bpy.data.objects.new(f"{source.name}_LOD", result)
+    bpy.context.scene.collection.objects.link(lod_ref)
+    lod_ref.hide_viewport = True
+    lod_ref.hide_render = True
+    return result
 
 
 def scatter_objects(settings) -> bool:
@@ -207,6 +210,13 @@ def scatter_objects(settings) -> bool:
     )
 
     rng = random.Random(settings.random_seed)
+
+    if settings.use_lod:
+        lod_mesh = _create_lod(source, settings.lod_decimate_ratio)
+        instance_mesh = lod_mesh
+    else:
+        lod_mesh = None
+        instance_mesh = source.data
 
     collection_name = f"Scatter_{source.name}"
     if settings.use_collection:
@@ -288,7 +298,7 @@ def scatter_objects(settings) -> bool:
 
         inst = bpy.data.objects.new(
             f"{source.name}_instance_{idx:06d}",
-            source.data,
+            instance_mesh,
         )
         inst.scale = [scale_factor] * 3
 
@@ -329,9 +339,6 @@ def scatter_objects(settings) -> bool:
     if settings.use_wind and placed_objects:
         for obj in placed_objects:
             _add_wind_gn(obj, settings)
-
-    if settings.use_lod and placed_objects:
-        _create_lod(source, settings.lod_decimate_ratio)
 
     bpy.context.view_layer.objects.active = target
     target.select_set(True)

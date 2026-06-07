@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - 'textures/**'
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint:
+    name: Lint (flake8)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install flake8
+          flake8 blender_scatter_addon/ --config=.flake8
+
+  security:
+    name: Security (bandit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install bandit
+          bandit -r blender_scatter_addon/ -c .bandit
+
+  test:
+    name: Test (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install -r requirements.txt
+          python -m pytest tests/ -v --cov=blender_scatter_addon --cov-report=term --cov-report=xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.xml

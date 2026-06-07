@@ -1,4 +1,20 @@
 import bpy
+import json
+import os
+
+
+class ScatterSourceItem(bpy.types.PropertyGroup):
+    object: bpy.props.PointerProperty(
+        name="Object",
+        type=bpy.types.Object,
+        poll=lambda self, obj: obj.type == 'MESH',
+    )
+    weight: bpy.props.FloatProperty(
+        name="Weight",
+        default=1.0,
+        min=0.01,
+        max=100.0,
+    )
 
 
 class ScatterSettings(bpy.types.PropertyGroup):
@@ -14,6 +30,20 @@ class ScatterSettings(bpy.types.PropertyGroup):
         description="Surface to scatter onto",
         type=bpy.types.Object,
         poll=lambda self, obj: obj.type == 'MESH',
+    )
+
+    source_objects: bpy.props.CollectionProperty(
+        type=ScatterSourceItem,
+    )
+    source_index: bpy.props.IntProperty(default=0)
+
+    scatter_mode: bpy.props.EnumProperty(
+        name="Mode",
+        items=[
+            ('FACE', "Face", "Scatter across faces"),
+            ('EDGE', "Edge", "Scatter along edges"),
+        ],
+        default='FACE',
     )
 
     density_map: bpy.props.PointerProperty(
@@ -92,8 +122,80 @@ class ScatterSettings(bpy.types.PropertyGroup):
         max=5.0,
     )
 
+    use_geometry_nodes: bpy.props.BoolProperty(
+        name="Use Geometry Nodes",
+        description="Use Geometry Nodes modifier for non-destructive scattering",
+        default=False,
+    )
 
-classes = (ScatterSettings,)
+    use_wind: bpy.props.BoolProperty(
+        name="Wind Animation",
+        description="Add wind animation to scattered instances",
+        default=False,
+    )
+
+    wind_strength: bpy.props.FloatProperty(
+        name="Wind Strength",
+        default=0.3,
+        min=0.0,
+        max=5.0,
+    )
+
+    wind_direction: bpy.props.FloatVectorProperty(
+        name="Wind Direction",
+        default=(1.0, 0.0, 0.0),
+        size=3,
+        subtype='DIRECTION',
+    )
+
+    wind_frequency: bpy.props.FloatProperty(
+        name="Wind Frequency",
+        default=1.0,
+        min=0.1,
+        max=20.0,
+    )
+
+    use_lod: bpy.props.BoolProperty(
+        name="Use LOD",
+        description="Generate level-of-detail meshes for instances",
+        default=False,
+    )
+
+    lod_decimate_ratio: bpy.props.FloatProperty(
+        name="LOD Decimate",
+        description="Decimation ratio for LOD levels",
+        default=0.5,
+        min=0.1,
+        max=0.9,
+    )
+
+    use_physics: bpy.props.BoolProperty(
+        name="Physics Placement",
+        description="Use rigid body physics for natural placement",
+        default=False,
+    )
+
+    physics_drop_height: bpy.props.FloatProperty(
+        name="Drop Height",
+        default=2.0,
+        min=0.1,
+        max=50.0,
+    )
+
+    physics_friction: bpy.props.FloatProperty(
+        name="Friction",
+        default=0.5,
+        min=0.0,
+        max=1.0,
+    )
+
+    preset_name: bpy.props.StringProperty(
+        name="Preset Name",
+        default="My Preset",
+    )
+
+
+classes = (ScatterSourceItem, ScatterSettings,)
 
 
 def register():

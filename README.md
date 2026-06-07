@@ -5,7 +5,8 @@
 ![Blender](https://img.shields.io/badge/Blender-5.1.2-orange)
 ![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/License-GPL%203.0-green)
-![Tests](https://img.shields.io/badge/Tests-9%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-20%20passed-brightgreen)
+![CI](https://github.com/variant46/parametric-scatter/actions/workflows/ci.yml/badge.svg)
 
 Модуль-расширение для Blender, реализующий параметрическое размещение геометрических объектов в заданном пространстве (аналог Corona Scatter). Управление плотностью, масштабом и поворотом на основе карт текстур.
 
@@ -15,9 +16,16 @@
 
 - Параметрическое рассеивание объекта-источника по поверхности целевого mesh
 - **3 карты текстур**: Density (плотность), Scale (масштаб), Rotation (поворот)
+- Collision detection — Avoid Overlap с KD-tree
+- Мульти-источники — несколько объектов с весами
+- Ветровая анимация (Wave) — процедурная анимация экземпляров
+- LOD (Level of Detail) — генерация упрощённых копий
+- Physics placement — симуляция Rigid Body для натурального расположения
+- Geometry Nodes — поддерживается неразрушающий режим
 - Выравнивание экземпляров по нормалям поверхности
 - Группировка в коллекции для производительности
 - Seed для воспроизводимости результата
+- Сохранение/загрузка пресетов (JSON)
 - Полная поддержка Undo/Redo
 - Интеграция в боковую панель 3D Viewport
 
@@ -32,6 +40,9 @@ python -m pytest tests/ -v --cov=blender_scatter_addon
 
 # Проверка безопасности
 bandit -r blender_scatter_addon/
+
+# Линтинг
+flake8 blender_scatter_addon/
 ```
 
 ## Установка аддона
@@ -48,14 +59,16 @@ bandit -r blender_scatter_addon/
 View3D → Sidebar (N) → Scatter
 ```
 
-1. **Source** — объект для рассеивания
+1. **Source** — объект для рассеивания (или несколько с весами)
 2. **Surface** — поверхность-цель
 3. **Texture Maps** (опционально):
    - Density — карта плотности
    - Scale — карта масштаба
    - Rotation — карта поворота
 4. **Parameters**: Count, Scale Min/Max, Seed
-5. **Scatter** — запуск
+5. **Режимы**: Face / Edge
+6. **Опции**: Align to Normal, Use Collection, Avoid Overlap, Wind, LOD, Physics
+7. **Scatter** — запуск / **Clear** — очистка
 
 ## Архитектура
 
@@ -69,21 +82,42 @@ graph TD
     Core --> Obj[Blender Objects]
     Op --> Props[properties.py]
     UI --> Props
+    Core --> GN[Geometry Nodes]
+    Core --> KD[KD-tree / Collision]
+    Core --> Wind[Wind Animation]
+    Core --> LOD[Level of Detail]
+    Core --> Phys[Rigid Body Physics]
 ```
 
-## Docker
+## CI/CD Pipeline
+
+Проект использует GitHub Actions для автоматической проверки качества кода.
+
+| Этап | Инструмент | Описание |
+|------|-----------|----------|
+| Lint | flake8 | Статический анализ, проверка стиля (PEP8, max-line-length=100) |
+| Security | bandit | SAST-анализ, поиск уязвимостей Python-кода |
+| Test | pytest + pytest-cov | 20 модульных тестов с замером покрытия |
+| Blender Integration | Blender --background | Интеграционный тест (опционально, в Docker) |
+
+Pipeline запускается на каждый push и pull request в `main`/`develop`.
+
+### Docker
 
 ```bash
 # Сборка образа
 docker-compose build
 
-# Запуск тестов в Docker
+# Запуск тестов
 docker-compose run pytest
 
 # Проверка безопасности
 docker-compose run security
 
-# Интеграционный тест Blender в Docker
+# Линтинг
+docker-compose run lint
+
+# Интеграционный тест Blender
 docker-compose run blender-test
 ```
 
@@ -91,11 +125,11 @@ docker-compose run blender-test
 
 | Уровень | Инструмент | Описание |
 |---------|-----------|----------|
-| Модульное | pytest | 9 тестов для texture_utils |
+| Модульное | pytest | 20 тестов для texture_utils и scatter_core |
 | Интеграционное | Blender --background | Scatter/Clear в Blender |
 | Безопасность | bandit | SAST-анализ Python-кода |
 | Зависимости | safety | Проверка уязвимостей пакетов |
-| Lint | flake8 | Статический анализ кода |
+| Lint | flake8 | Статический анализ кода (PEP8) |
 
 ## API
 
@@ -130,6 +164,7 @@ docker-compose run blender-test
 - SAST-анализ: `bandit -r blender_scatter_addon/`
 - Проверка зависимостей: `safety check -r requirements.txt`
 - Минимальные привилегии: аддон не требует доступа к файловой системе вне Blender
+- Pipeline CI: flake8 + bandit + pytest на каждый PR
 
 ## ИИ-ассистенты
 

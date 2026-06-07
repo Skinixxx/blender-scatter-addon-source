@@ -21,17 +21,19 @@ class SCATTER_OT_scatter(bpy.types.Operator):
             self.report({'ERROR'}, "Scattering failed")
             return {'CANCELLED'}
         self.report({'INFO'}, f"Scattered {settings.count} instances")
-        for area in context.screen.areas:
-            if area.type == 'VIEW_3D':
-                area.tag_redraw()
-                try:
-                    area.spaces[0].region_3d.view_distance = max(
-                        settings.target_object.dimensions.x,
-                        settings.target_object.dimensions.y,
-                        settings.target_object.dimensions.z,
-                    ) * 2.5
-                except AttributeError:
-                    pass
+        screen = context.screen
+        if screen:
+            for area in screen.areas:
+                if area.type == 'VIEW_3D':
+                    area.tag_redraw()
+                    try:
+                        area.spaces[0].region_3d.view_distance = max(
+                            settings.target_object.dimensions.x,
+                            settings.target_object.dimensions.y,
+                            settings.target_object.dimensions.z,
+                        ) * 2.5
+                    except AttributeError:
+                        pass
         return {'FINISHED'}
 
 
@@ -46,9 +48,11 @@ class SCATTER_OT_clear(bpy.types.Operator):
         if settings.source_object:
             clear_scatter(settings.source_object.name)
             self.report({'INFO'}, "Scatter cleared")
-        for area in context.screen.areas:
-            if area.type == 'VIEW_3D':
-                area.tag_redraw()
+        screen = context.screen
+        if screen:
+            for area in screen.areas:
+                if area.type == 'VIEW_3D':
+                    area.tag_redraw()
         return {'FINISHED'}
 
 

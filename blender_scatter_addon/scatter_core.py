@@ -214,8 +214,9 @@ def scatter_objects(settings) -> bool:
             scatter_col = bpy.data.collections[collection_name]
         else:
             scatter_col = bpy.data.collections.new(collection_name)
-        if scatter_col.name not in bpy.context.collection.children:
-            bpy.context.collection.children.link(scatter_col)
+        master = bpy.context.scene.collection
+        if scatter_col.name not in master.children:
+            master.children.link(scatter_col)
     else:
         scatter_col = None
 
@@ -314,7 +315,7 @@ def scatter_objects(settings) -> bool:
         if scatter_col:
             scatter_col.objects.link(inst)
         else:
-            bpy.context.collection.objects.link(inst)
+            bpy.context.scene.collection.objects.link(inst)
 
         placed_objects.append(inst)
 
@@ -410,6 +411,11 @@ def clear_scatter(source_name: str):
         for obj in list(col.objects):
             bpy.data.objects.remove(obj, do_unlink=True)
         bpy.data.collections.remove(col)
+
+    prefix = f"{source_name}_instance_"
+    for obj in list(bpy.data.objects):
+        if obj.name.startswith(prefix):
+            bpy.data.objects.remove(obj, do_unlink=True)
 
     for obj in bpy.data.objects:
         if obj.type == 'MESH':

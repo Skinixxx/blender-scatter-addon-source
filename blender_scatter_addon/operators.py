@@ -45,8 +45,17 @@ class SCATTER_OT_clear(bpy.types.Operator):
 
     def execute(self, context):
         settings = context.scene.scatter_settings
+        cleared = False
+        names = set()
         if settings.source_object:
-            clear_scatter(settings.source_object.name)
+            names.add(settings.source_object.name)
+        for item in settings.source_objects:
+            if item.object:
+                names.add(item.object.name)
+        for name in names:
+            clear_scatter(name)
+            cleared = True
+        if cleared:
             self.report({'INFO'}, "Scatter cleared")
         screen = context.screen
         if screen:

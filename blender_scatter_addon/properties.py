@@ -11,6 +11,7 @@ class ScatterSourceItem(bpy.types.PropertyGroup):
     )
     weight: bpy.props.FloatProperty(
         name="Weight",
+        description="Relative probability this source is picked",
         default=1.0,
         min=0.01,
         max=100.0,
@@ -35,7 +36,11 @@ class ScatterSettings(bpy.types.PropertyGroup):
     source_objects: bpy.props.CollectionProperty(
         type=ScatterSourceItem,
     )
-    source_index: bpy.props.IntProperty(default=0)
+    source_index: bpy.props.IntProperty(
+        name="Source Index",
+        description="Active multi-source item",
+        default=0,
+    )
 
     scatter_mode: bpy.props.EnumProperty(
         name="Mode",
@@ -136,6 +141,7 @@ class ScatterSettings(bpy.types.PropertyGroup):
 
     wind_strength: bpy.props.FloatProperty(
         name="Wind Strength",
+        description="Intensity of wind animation",
         default=0.3,
         min=0.0,
         max=5.0,
@@ -143,6 +149,7 @@ class ScatterSettings(bpy.types.PropertyGroup):
 
     wind_direction: bpy.props.FloatVectorProperty(
         name="Wind Direction",
+        description="Direction the wind blows",
         default=(1.0, 0.0, 0.0),
         size=3,
         subtype='DIRECTION',
@@ -150,6 +157,7 @@ class ScatterSettings(bpy.types.PropertyGroup):
 
     wind_frequency: bpy.props.FloatProperty(
         name="Wind Frequency",
+        description="Oscillation speed of wind animation",
         default=1.0,
         min=0.1,
         max=20.0,
@@ -177,6 +185,7 @@ class ScatterSettings(bpy.types.PropertyGroup):
 
     physics_drop_height: bpy.props.FloatProperty(
         name="Drop Height",
+        description="Height instances fall from for physics simulation",
         default=2.0,
         min=0.1,
         max=50.0,
@@ -184,6 +193,7 @@ class ScatterSettings(bpy.types.PropertyGroup):
 
     physics_friction: bpy.props.FloatProperty(
         name="Friction",
+        description="Surface friction for physics placement",
         default=0.5,
         min=0.0,
         max=1.0,

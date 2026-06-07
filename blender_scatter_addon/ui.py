@@ -18,6 +18,7 @@ class SCATTER_OT_source_add(bpy.types.Operator):
 class SCATTER_OT_source_remove(bpy.types.Operator):
     bl_idname = "scatter.source_remove"
     bl_label = "Remove Source"
+    bl_description = "Remove selected source from multi-source list"
 
     def execute(self, context):
         settings = context.scene.scatter_settings
@@ -30,6 +31,7 @@ class SCATTER_OT_source_remove(bpy.types.Operator):
 class SCATTER_OT_preset_save(bpy.types.Operator):
     bl_idname = "scatter.preset_save"
     bl_label = "Save Preset"
+    bl_description = "Save current settings as a JSON preset file"
 
     filename_ext = ".json"
 
@@ -72,6 +74,7 @@ class SCATTER_OT_preset_save(bpy.types.Operator):
 class SCATTER_OT_preset_load(bpy.types.Operator):
     bl_idname = "scatter.preset_load"
     bl_label = "Load Preset"
+    bl_description = "Load settings from a JSON preset file"
 
     filename_ext = ".json"
 

@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 100
-exclude = .git,__pycache__,__init__.py,demo_*.py
+exclude = .git,__pycache__,__init__.py,demos/
 ignore = E402,W503,F821,F722
 per-file-ignores =
     properties.py: F401

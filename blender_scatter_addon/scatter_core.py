@@ -54,9 +54,15 @@ def _scatter_gn(target, source, settings):
 
         distribute = group.nodes.new('GeometryNodeDistributePointsOnFaces')
         distribute.distribute_method = mode
-        distribute.inputs['Seed'].default_value = settings.random_seed
-        group.links.new(input_node.outputs['Geometry'], distribute.inputs['Mesh'])
-        group.links.new(density.outputs[0], distribute.inputs['Density'])
+        distribute.inputs[distribute.inputs.find('Seed')].default_value = settings.random_seed
+        group.links.new(
+            input_node.outputs['Geometry'],
+            distribute.inputs[distribute.inputs.find('Mesh')],
+        )
+        group.links.new(
+            density.outputs[0],
+            distribute.inputs[distribute.inputs.find('Density')],
+        )
 
         instance = group.nodes.new('GeometryNodeInstanceOnPoints')
         group.links.new(distribute.outputs['Points'], instance.inputs['Points'])

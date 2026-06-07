@@ -11,16 +11,16 @@ from blender_scatter_addon import register
 register()
 
 bpy.ops.mesh.primitive_grid_add(x_subdivisions=10, y_subdivisions=10, size=5)
-target = bpy.context.active_object
+target = bpy.context.view_layer.objects.active
 target.name = "Ground"
 
 bpy.ops.mesh.primitive_uv_sphere_add(radius=0.12)
-pebble = bpy.context.active_object
+pebble = bpy.context.view_layer.objects.active
 pebble.name = "Pebble"
 bpy.ops.object.shade_smooth()
 
 bpy.ops.mesh.primitive_cube_add(size=0.15)
-cube = bpy.context.active_object
+cube = bpy.context.view_layer.objects.active
 cube.name = "Rock"
 
 s = bpy.context.scene.scatter_settings

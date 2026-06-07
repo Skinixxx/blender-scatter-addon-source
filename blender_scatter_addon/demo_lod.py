@@ -11,11 +11,11 @@ from blender_scatter_addon import register
 register()
 
 bpy.ops.mesh.primitive_grid_add(x_subdivisions=10, y_subdivisions=10, size=4)
-target = bpy.context.active_object
+target = bpy.context.view_layer.objects.active
 target.name = "Terrain"
 
 bpy.ops.mesh.primitive_ico_sphere_add(radius=0.15, subdivisions=3)
-source = bpy.context.active_object
+source = bpy.context.view_layer.objects.active
 source.name = "DetailRock"
 
 s = bpy.context.scene.scatter_settings

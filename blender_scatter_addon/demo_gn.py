@@ -11,11 +11,11 @@ from blender_scatter_addon import register
 register()
 
 bpy.ops.mesh.primitive_grid_add(x_subdivisions=20, y_subdivisions=20, size=6)
-target = bpy.context.active_object
+target = bpy.context.view_layer.objects.active
 target.name = "Terrain"
 
 bpy.ops.mesh.primitive_ico_sphere_add(radius=0.15, subdivisions=2)
-source = bpy.context.active_object
+source = bpy.context.view_layer.objects.active
 source.name = "Rock"
 
 s = bpy.context.scene.scatter_settings
@@ -31,7 +31,7 @@ s.avoid_overlap = True
 bpy.ops.scatter.execute()
 
 if not bpy.app.background:
-    for area in bpy.context.screen.areas:
+    for area in getattr(bpy.context.screen, 'areas', []):
         if area.type == 'VIEW_3D':
             area.spaces[0].shading.type = 'MATERIAL'
             area.spaces[0].region_3d.view_distance = 8

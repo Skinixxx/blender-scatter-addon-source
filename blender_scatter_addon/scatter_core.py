@@ -331,8 +331,9 @@ def scatter_objects(settings) -> bool:
     if settings.use_lod and placed_objects:
         _create_lod(source, settings.lod_decimate_ratio)
 
-    if scatter_col:
-        for area in bpy.context.screen.areas:
+    screen = bpy.context.screen
+    if scatter_col and screen:
+        for area in screen.areas:
             if area.type == 'VIEW_3D':
                 area.tag_redraw()
 
@@ -342,22 +343,35 @@ def scatter_objects(settings) -> bool:
 
 def _apply_physics(objects, settings):
     if not bpy.context.scene.rigidbody_world:
-        bpy.ops.rigidbody.world_add()
+        try:
+            bpy.ops.rigidbody.world_add()
+        except RuntimeError:
+            return
     rb_world = bpy.context.scene.rigidbody_world
     rb_world.enabled = True
 
     for obj in objects:
         obj.location.z += settings.physics_drop_height
         bpy.context.view_layer.objects.active = obj
-        bpy.ops.rigidbody.object_add()
+        try:
+            bpy.ops.rigidbody.object_add()
+        except RuntimeError:
+            continue
         obj.rigid_body.type = 'ACTIVE'
         obj.rigid_body.friction = settings.physics_friction
         obj.rigid_body.collision_shape = 'CONVEX_HULL'
 
-    bpy.ops.mesh.primitive_plane_add(size=50, location=(0, 0, 0))
-    ground = bpy.context.active_object
+    try:
+        bpy.ops.mesh.primitive_plane_add(size=50, location=(0, 0, 0))
+    except RuntimeError:
+        return
+    ground = bpy.context.view_layer.objects.active
     ground.name = "_physics_ground"
-    bpy.ops.rigidbody.object_add()
+    try:
+        bpy.ops.rigidbody.object_add()
+    except RuntimeError:
+        bpy.data.objects.remove(ground, do_unlink=True)
+        return
     ground.rigid_body.type = 'PASSIVE'
     ground.rigid_body.friction = settings.physics_friction
 

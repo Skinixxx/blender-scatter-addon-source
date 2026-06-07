@@ -62,7 +62,7 @@ bpy.ops.scatter.execute()
 if bpy.app.background:
     print("(background mode — viewport setup skipped)")
 else:
-    for area in bpy.context.screen.areas:
+    for area in getattr(bpy.context.screen, 'areas', []):
         if area.type == 'VIEW_3D':
             for space in area.spaces:
                 if space.type == 'VIEW_3D':

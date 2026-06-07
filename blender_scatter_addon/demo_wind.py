@@ -11,22 +11,25 @@ from blender_scatter_addon import register
 register()
 
 bpy.ops.mesh.primitive_grid_add(x_subdivisions=20, y_subdivisions=20, size=6)
-target = bpy.context.active_object
+target = bpy.context.view_layer.objects.active
 target.name = "Field"
 
 bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.03, depth=0.4)
-stem = bpy.context.active_object
+stem = bpy.context.view_layer.objects.active
 stem.name = "Stem"
 bpy.ops.object.select_all(action='DESELECT')
 
 bpy.ops.mesh.primitive_uv_sphere_add(radius=0.08, location=(0, 0, 0.4))
-head = bpy.context.active_object
+head = bpy.context.view_layer.objects.active
 head.name = "Head"
 bpy.ops.object.select_all(action='DESELECT')
 head.select_set(True)
 stem.select_set(True)
 bpy.context.view_layer.objects.active = stem
-bpy.ops.object.join()
+try:
+    bpy.ops.object.join()
+except RuntimeError:
+    pass
 plant = stem
 plant.name = "GrassBlade"
 
@@ -46,7 +49,7 @@ s.use_geometry_nodes = True
 bpy.ops.scatter.execute()
 
 if not bpy.app.background:
-    for area in bpy.context.screen.areas:
+    for area in getattr(bpy.context.screen, 'areas', []):
         if area.type == 'VIEW_3D':
             area.spaces[0].shading.type = 'MATERIAL'
             area.spaces[0].region_3d.view_distance = 7

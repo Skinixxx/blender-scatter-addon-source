@@ -12,11 +12,11 @@ register()
 
 bpy.ops.mesh.primitive_monkey_add(size=2, location=(0, 0, 0))
 bpy.ops.object.shade_smooth()
-target = bpy.context.active_object
+target = bpy.context.view_layer.objects.active
 target.name = "Suzanne"
 
 bpy.ops.mesh.primitive_uv_sphere_add(radius=0.08)
-source = bpy.context.active_object
+source = bpy.context.view_layer.objects.active
 source.name = "Spike"
 
 s = bpy.context.scene.scatter_settings
@@ -32,7 +32,7 @@ s.random_seed = 77
 bpy.ops.scatter.execute()
 
 if not bpy.app.background:
-    for area in bpy.context.screen.areas:
+    for area in getattr(bpy.context.screen, 'areas', []):
         if area.type == 'VIEW_3D':
             area.spaces[0].shading.type = 'MATERIAL'
             area.spaces[0].region_3d.view_distance = 5

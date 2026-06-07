@@ -161,7 +161,7 @@ class SCATTER_PT_main(bpy.types.Panel):
             box.prop(settings, "wind_frequency")
 
         box = layout.box()
-        box.label(text="LOD", icon='LOD')
+        box.label(text="LOD", icon='MOD_DECIM')
         box.prop(settings, "use_lod")
         if settings.use_lod:
             box.prop(settings, "lod_decimate_ratio")

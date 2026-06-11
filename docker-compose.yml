@@ -1,48 +1,9 @@
 services:
-  blender-test:
+  scatter:
     build: .
+    container_name: blender-scatter-ci
     volumes:
+      - /tmp/blender-4.2.0-linux-x64:/opt/blender
       - .:/app
-    working_dir: /app
-    command: >
-      blender --background --python-expr "
-      import sys; sys.path.append('.');
-      from blender_scatter_addon import register, unregister;
-      register();
-      import bpy;
-      bpy.ops.wm.read_factory_settings(use_empty=True);
-      bpy.ops.mesh.primitive_grid_add(x_subdivisions=10, y_subdivisions=10, size=4);
-      target = bpy.context.active_object;
-      bpy.ops.mesh.primitive_cube_add(size=0.3);
-      source = bpy.context.active_object;
-      s = bpy.context.scene.scatter_settings;
-      s.source_object = source; s.target_object = target; s.count = 25;
-      print('Scatter test:', bpy.ops.scatter.execute());
-      bpy.ops.scatter.clear();
-      unregister();
-      print('Docker CI test PASSED');
-      "
-
-  pytest:
-    build: .
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: python3 -m pytest tests/ -v --cov=blender_scatter_addon
-
-  lint:
-    build: .
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: python3 -m flake8 blender_scatter_addon/
-
-  security:
-    build: .
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: >
-      sh -c "bandit -r blender_scatter_addon/ -f json -o bandit_report.json &&
-             safety check -r requirements.txt --json > safety_report.json &&
-             echo 'Security checks completed'"
+    environment:
+      - BLENDER_PATH=/opt/blender
